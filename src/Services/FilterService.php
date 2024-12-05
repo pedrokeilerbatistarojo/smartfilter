@@ -2,7 +2,9 @@
 
 namespace Pedrokeilerbatistarojo\Smartfilter\Services;
 
+use Exception;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Pagination\LengthAwarePaginator;
 use Pedrokeilerbatistarojo\Smartfilter\Dtos\SearchRequest;
 use Pedrokeilerbatistarojo\Smartfilter\Helpers\ResponseHelper;
 use Pedrokeilerbatistarojo\Smartfilter\Traits\TraitHandleListPayload;
@@ -14,28 +16,21 @@ class FilterService
     use TraitHandleListPayload;
 
     /**
-     * @throws \Exception
+     * @throws Exception
      */
-    public function execute(string $modelPath, array $inputs = []): JsonResponse
+    public function execute(string $modelPath, array $inputs = []): LengthAwarePaginator
     {
         if (class_exists($modelPath)) {
             $entity = new $modelPath();
         } else {
-            throw new \Exception("The class {$modelPath} does not exist.");
+            throw new Exception("The class {$modelPath} does not exist.");
         }
 
         if (!isset($entity)) {
-            throw new \Exception('The model is not configured in the service.');
+            throw new Exception('The model is not configured in the service.');
         }
 
-        try {
-            $this->setPayload(new SearchRequest($inputs));
-            $result = $this->searchServiceResult($entity, $this->payload);
-            return ResponseHelper::sendResponse($result, "Search completed successfully");
-        }catch (\Exception $ex){
-            return ResponseHelper::sendError($ex->getMessage());
-        }
-
-
+        $this->setPayload(new SearchRequest($inputs));
+        return $this->searchServiceResult($entity, $this->payload);
     }
 }
