@@ -3,10 +3,8 @@
 namespace Pedrokeilerbatistarojo\Smartfilter\Services;
 
 use Exception;
-use Illuminate\Http\JsonResponse;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Pedrokeilerbatistarojo\Smartfilter\Dtos\SearchRequest;
-use Pedrokeilerbatistarojo\Smartfilter\Helpers\ResponseHelper;
 use Pedrokeilerbatistarojo\Smartfilter\Traits\TraitHandleListPayload;
 use Pedrokeilerbatistarojo\Smartfilter\Traits\TraitSearchResult;
 
