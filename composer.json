@@ -2,6 +2,7 @@
     "name": "pedrokeilerbatistarojo/smartfilter",
     "description": "This Laravel package provides a streamlined solution for filtering and listing data. It accepts an input array, applies customizable filters, and returns a structured JSON response. Ideal for projects requiring dynamic data filtering with minimal setup, the package ensures consistency in API responses while maintaining flexibility to handle complex filter conditions.",
     "type": "laravel-package",
+    "license": "MIT",
     "autoload": {
         "psr-4": {
             "Pedrokeilerbatistarojo\\Smartfilter\\": "src/"
