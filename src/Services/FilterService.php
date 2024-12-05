@@ -2,6 +2,7 @@
 
 namespace Pedrokeilerbatistarojo\Smartfilter\Services;
 
+use Illuminate\Http\JsonResponse;
 use Pedrokeilerbatistarojo\Smartfilter\Dtos\SearchRequest;
 use Pedrokeilerbatistarojo\Smartfilter\Helpers\ResponseHelper;
 use Pedrokeilerbatistarojo\Smartfilter\Traits\TraitHandleListPayload;
@@ -15,7 +16,7 @@ class FilterService
     /**
      * @throws \Exception
      */
-    public function execute(string $modelPath, array $inputs = [])
+    public function execute(string $modelPath, array $inputs = []): JsonResponse
     {
         if (class_exists($modelPath)) {
             $entity = new $modelPath();
