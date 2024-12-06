@@ -41,7 +41,7 @@ trait TraitSearchResult
 
             $criteria[] = $factoryCriteria->create(
                 $filter->field,
-                $filter->operation,
+                $filter->operator,
                 $filter->value,
                 $filter->operationType,
                 $filter->relation,

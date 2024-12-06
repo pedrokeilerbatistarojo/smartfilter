@@ -6,4 +6,5 @@ enum OperationTypeEnum: string
 {
     case AND = 'and';
     case OR = 'or';
+    case IN = 'in';
 }

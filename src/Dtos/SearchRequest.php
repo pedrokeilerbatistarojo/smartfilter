@@ -104,12 +104,13 @@ class SearchRequest
             if($isInvalidFilter) throw new Exception('Invalid filters params');
 
             $field = $filter[0] ?? null;
-            $operation = '=';
+            $operator = '=';
             $value = null;
             $operationType = OperationTypeEnum::AND->value;
             $relation = null;
 
             $len = count($filter);
+
             if($len < 2){
 
                 throw new Exception("Invalid Parameters");
@@ -120,28 +121,34 @@ class SearchRequest
 
             }else if($len === 3){
 
-                $operation = $filter[1] ?? null;
-                $value = $filter[2] ?? null;
+                if(is_array($filter[1])){
+                    $value = $filter[1];
+                    $operationType = $filter[2];
+                    $this->validOperationType($operationType);
+                }else{
+                    $operator = $filter[1] ?? null;
+                    $value = $filter[2] ?? null;
+                }
 
             }else if($len === 4){
 
-                $operation = $filter[1] ?? null;
+                $operator = $filter[1] ?? null;
                 $value = $filter[2] ?? null;
-                $this->validOperationType($filter);
                 $operationType = $filter[3];
+                $this->validOperationType($operationType);
 
             }else if($len === 5){
 
-                $operation = $filter[1] ?? null;
+                $operator = $filter[1] ?? null;
                 $value = $filter[2] ?? null;
-                $this->validOperationType($filter);
                 $operationType = $filter[3];
+                $this->validOperationType($operationType);
                 $relation = $filter[4] ?? null;
             }
 
             $filterObject = new FilterItemObject(
                 $field,
-                $operation,
+                $operator,
                 $value,
                 $operationType,
                 $relation
@@ -156,10 +163,11 @@ class SearchRequest
     /**
      * @throws Exception
      */
-    private function validOperationType(array $filter) : void
+    private function validOperationType(string $operationType) : void
     {
-        if(OperationTypeEnum::tryFrom($filter[3]) === null){
-            throw new Exception("{$filter[3]} is an invalid operation type. Try: and, or, in");
+        $operationType = strtolower($operationType);
+        if(OperationTypeEnum::tryFrom($operationType) === null){
+            throw new Exception("{$operationType} is an invalid operation type. Try: and, or, in");
         }
     }
 }

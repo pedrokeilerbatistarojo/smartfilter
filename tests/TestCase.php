@@ -2,17 +2,26 @@
 
 namespace Pedrokeilerbatistarojo\Smartfilter\Tests;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Orchestra\Testbench\Concerns\WithWorkbench;
 use Orchestra\Testbench\TestCase as BaseTestCase;
 use function Orchestra\Testbench\workbench_path;
+use Faker\Factory as FakerFactory;
+use Faker\Generator;
 
 
 abstract class TestCase extends BaseTestCase
 {
     use RefreshDatabase;
 
+    protected Generator $faker;
+
+    protected function initializeFaker(): void
+    {
+        $this->faker = FakerFactory::create();
+    }
+
     protected function setUp(): void
     {
+        $this->initializeFaker();
         parent::setUp();
     }
 

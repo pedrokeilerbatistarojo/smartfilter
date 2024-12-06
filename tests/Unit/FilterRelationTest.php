@@ -2,35 +2,50 @@
 
 namespace Pedrokeilerbatistarojo\Smartfilter\Tests\Unit;
 
+use Exception;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Str;
+use JetBrains\PhpStorm\NoReturn;
 use Pedrokeilerbatistarojo\Smartfilter\Helpers\ResponseHelper;
 use Pedrokeilerbatistarojo\Smartfilter\Services\FilterService;
 use Pedrokeilerbatistarojo\Smartfilter\Tests\TestCase;
+use Workbench\App\Models\Role;
 use Workbench\App\Models\User;
-use Workbench\Database\Factories\RoleFactory;
-use Workbench\Database\Factories\UserFactory;
 
-class FilterTest extends TestCase
+class FilterRelationTest extends TestCase
 {
+
     /**
-     * @throws \Exception
+     * @throws Exception
      */
-    public function test_example_filter()
+    #[NoReturn]
+    public function test_relation_with_filter()
     {
-        $role = RoleFactory::new()->create([
+        $role = Role::create([
             'name' => 'Owner'
         ]);
 
-        $users = UserFactory::new()->count(10)->create([
-            'role_id' => $role->id
-        ]);
+        for ($i = 0; $i < 10; $i++) {
+            $nameFilterable = $this->faker->name();
+            $emailFilterable = $this->faker->safeEmail();
+
+            User::create([
+                'name' => $nameFilterable,
+                'email' => $emailFilterable,
+                'email_verified_at' => now(),
+                'password' => Hash::make('password'),
+                'remember_token' => Str::random(10),
+                'role_id' => $role->id
+            ]);
+        }
 
         $filters = [
-            ['name', 'like', 'Owner', 'and'],
-            ['email', 'like', 'owner@example.com', 'and'],
+            ['name', 'like', $nameFilterable, 'and'],
+            ['email', 'like', $emailFilterable, 'and'],
             ['name', 'like', 'Owner', 'and', 'role']
         ];
 
-        $columns = ['id', 'name', 'email'];
+        $columns = ['id', 'name', 'email', 'role_id'];
         $includes = ['role'];
 
         $params = [
@@ -45,6 +60,7 @@ class FilterTest extends TestCase
 
         $filterService = new FilterService();
         $result = $filterService->execute(User::class, $params);
+
         $jsonResponse = ResponseHelper::sendResponse(
             $result,
             'Search completed successfully'
@@ -56,8 +72,8 @@ class FilterTest extends TestCase
         $this->assertEmpty($jsonResponse['errors']);
 
         $payload = $jsonResponse['payload'];
-        $this->assertCount(8, $payload['items']);
-        $this->assertEquals(10, $payload['total']);
+        $this->assertCount(1, $payload['items']);
+        $this->assertEquals(1, $payload['total']);
 
         $user = $payload['items'][0];
         $this->assertArrayHasKey('id', $user);
@@ -68,8 +84,8 @@ class FilterTest extends TestCase
 
         $metadata = $payload['metadata'];
         $this->assertEquals(1, $metadata['currentPage']);
-        $this->assertEquals(2, $metadata['lastPage']);
+        $this->assertEquals(1, $metadata['lastPage']);
         $this->assertEquals(8, $metadata['itemsPerPage']);
-        $this->assertEquals(10, $metadata['total']);
+        $this->assertEquals(1, $metadata['total']);
     }
 }
